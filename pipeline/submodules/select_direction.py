@@ -289,9 +289,10 @@ def select_direction(
     return pos, layer, candidate_directions[pos, layer]
 
 def masked_mean(seq, mask = None, dim = 1, keepdim = False):
-    print(f"masked_mean: {seq.shape=} {mask.shape=} {dim=} {keepdim=}")
     if mask is None:
+        print(f"masked_mean: {seq.shape=} {dim=} {keepdim=}")
         return seq.mean(dim = dim)
+    print(f"masked_mean: {seq.shape=} {mask.shape=} {dim=} {keepdim=}")
 
     if seq.ndim == 3:
         mask = rearrange(mask, 'b n -> b n 1')
@@ -317,7 +318,7 @@ def masked_mean(seq, mask = None, dim = 1, keepdim = False):
         alpha_cap / math.sqrt(embedding_size), \
             embed_i, ulb_embed, grads)
 
-    print(f"{alpha=}")
+    print(f"masked_mean: {alpha.shape=}")
     return alpha
 
 
