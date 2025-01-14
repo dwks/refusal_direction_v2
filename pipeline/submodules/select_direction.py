@@ -289,6 +289,7 @@ def select_direction(
     return pos, layer, candidate_directions[pos, layer]
 
 def masked_mean(seq, mask = None, dim = 1, keepdim = False):
+    print(f"masked_mean: {seq.shape=} {mask.shape=} {dim=} {keepdim=}")
     if mask is None:
         return seq.mean(dim = dim)
 
@@ -298,6 +299,8 @@ def masked_mean(seq, mask = None, dim = 1, keepdim = False):
     masked_seq = seq.masked_fill(~mask, 0.)
     numer = masked_seq.sum(dim = dim, keepdim = keepdim)
     denom = mask.sum(dim = dim, keepdim = keepdim)
+ 
+    print(f"masked_mean: {mask.shape=} {masked_seq.shape=} {numer.shape=} {denom.shape=}")
 
     #masked_mean = numer / denom.clamp(min = 1e-3)
     #masked_mean = masked_mean.masked_fill(denom == 0, 0.)
