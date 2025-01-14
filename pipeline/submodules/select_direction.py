@@ -301,6 +301,7 @@ def masked_mean(seq, mask = None, dim = 1, keepdim = False):
 
     #masked_mean = numer / denom.clamp(min = 1e-3)
     #masked_mean = masked_mean.masked_fill(denom == 0, 0.)
+    #return masked_mean
 
     # parser.add_argument('--alpha_cap', type=float, default=0.03125)
     alpha_cap = 0.03125
@@ -313,10 +314,14 @@ def masked_mean(seq, mask = None, dim = 1, keepdim = False):
         alpha_cap / math.sqrt(embedding_size), \
             embed_i, ulb_embed, grads)
 
-    return masked_mean
+    return alpha
 
+
+# lb_embedding: labelled embedding
+# ulb_embedding: unlabelled embedding
+# ulb_grads: unlabelled gradients
 def calculate_optimum_alpha(eps, lb_embedding, ulb_embedding, ulb_grads):
-    z = (lb_embedding - ulb_embedding)
+    z = lb_embedding - ulb_embedding
     alpha = (eps * z.norm(dim=1) / ulb_grads.norm(dim=1)) \
         .unsqueeze(dim=1).repeat(1, z.size(1)) * ulb_grads / (z + 1e-8)
 
