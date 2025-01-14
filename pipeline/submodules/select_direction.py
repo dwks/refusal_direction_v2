@@ -299,9 +299,28 @@ def masked_mean(seq, mask = None, dim = 1, keepdim = False):
     numer = masked_seq.sum(dim = dim, keepdim = keepdim)
     denom = mask.sum(dim = dim, keepdim = keepdim)
 
-    masked_mean = numer / denom.clamp(min = 1e-3)
-    masked_mean = masked_mean.masked_fill(denom == 0, 0.)
+    #masked_mean = numer / denom.clamp(min = 1e-3)
+    #masked_mean = masked_mean.masked_fill(denom == 0, 0.)
+
+    # parser.add_argument('--alpha_cap', type=float, default=0.03125)
+    alpha_cap = 0.03125
+    embedding_size = masked_seq.shape[-1]
+    embed_i = mask
+    ulb_embed = masked_seq
+    grads = ulb_embed
+    
+    alpha = calculate_optimum_alpha( \
+        alpha_cap / math.sqrt(embedding_size), \
+            embed_i, ulb_embed, grads)
+
     return masked_mean
+
+def calculate_optimum_alpha(eps, lb_embedding, ulb_embedding, ulb_grads):
+    z = (lb_embedding - ulb_embedding)
+    alpha = (eps * z.norm(dim=1) / ulb_grads.norm(dim=1)) \
+        .unsqueeze(dim=1).repeat(1, z.size(1)) * ulb_grads / (z + 1e-8)
+
+    return alpha
 
 def kl_div_fn(
     logits_a: Float[Tensor, 'batch seq_pos d_vocab'],
