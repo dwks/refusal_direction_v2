@@ -314,6 +314,7 @@ def masked_mean(seq, mask = None, dim = 1, keepdim = False):
         alpha_cap / math.sqrt(embedding_size), \
             embed_i, ulb_embed, grads)
 
+    print(f"{alpha=}")
     return alpha
 
 
@@ -344,7 +345,8 @@ def kl_div_fn(
 
     kl_divs = torch.sum(probs_a * (torch.log(probs_a + epsilon) - torch.log(probs_b + epsilon)), dim=-1)
 
-    if mask is None:
-        return torch.mean(kl_divs, dim=-1)
-    else:
-        return masked_mean(kl_divs, mask).mean(dim=-1)
+    #if mask is None:
+    #    return torch.mean(kl_divs, dim=-1)
+    #else:
+    #    return masked_mean(kl_divs, mask).mean(dim=-1)
+    return masked_mean(kl_divs, mask).mean(dim=-1)
